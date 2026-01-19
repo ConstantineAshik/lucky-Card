@@ -1,0 +1,132 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Nunito:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: "Nunito", sans-serif;
+  background: radial-gradient(circle at top, #ffe9f1 0%, #f5e4ff 50%, #e9f2ff 100%);
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: "Fraunces", serif;
+}
+
+.ambient-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 15%, rgba(255, 214, 233, 0.8), transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(216, 227, 255, 0.8), transparent 45%),
+    radial-gradient(circle at 50% 80%, rgba(255, 239, 213, 0.6), transparent 45%);
+  filter: blur(10px);
+  opacity: 0.8;
+}
+
+.card-shell {
+  perspective: 1200px;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 600ms ease;
+}
+
+.card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 1.25rem;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+}
+
+.card.revealed .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-pattern {
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.7), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.5), transparent 40%),
+    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.5), transparent 45%),
+    linear-gradient(135deg, rgba(255, 192, 203, 0.65), rgba(216, 180, 254, 0.7));
+}
+
+.sparkle-burst {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #fff6b0;
+  box-shadow: 0 0 10px rgba(255, 215, 128, 0.8);
+  animation: sparkle 900ms ease-out forwards;
+  transform: translate(0, 0) scale(0.6);
+}
+
+@keyframes sparkle {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx), var(--ty)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-inner {
+    transition: none;
+  }
+
+  .card.revealed .card-inner {
+    transform: none;
+  }
+
+  .card-face {
+    backface-visibility: visible;
+  }
+
+  .card-front {
+    transform: none;
+    opacity: 0;
+  }
+
+  .card.revealed .card-back {
+    opacity: 0;
+  }
+
+  .card.revealed .card-front {
+    opacity: 1;
+  }
+
+  .sparkle {
+    animation: none;
+    opacity: 0;
+  }
+}
