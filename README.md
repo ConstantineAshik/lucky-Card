@@ -9,6 +9,12 @@ npm install
 npm run dev
 ```
 
+Optional type check:
+
+```bash
+npm run typecheck
+```
+
 ## How seeding works
 
 - On first load, the app reads `seed` from the URL.

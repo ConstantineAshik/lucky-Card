@@ -17,7 +17,7 @@ const GiftCard = ({ card, index, isRevealed, isFirstPicked, onReveal }: GiftCard
     <button
       type="button"
       className={`card card-shell relative h-44 w-full rounded-3xl text-left shadow-md transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 focus-visible:ring-offset-2 sm:h-52 ${
-        isFirstPicked ? "ring-2 ring-rose-300 shadow-glow" : ""
+        isFirstPicked ? "first-pick ring-2 ring-rose-300 shadow-glow" : ""
       } ${isRevealed ? "revealed" : ""}`}
       onClick={() => onReveal(card.id)}
       aria-pressed={isRevealed}
@@ -25,7 +25,9 @@ const GiftCard = ({ card, index, isRevealed, isFirstPicked, onReveal }: GiftCard
     >
       <div className="card-inner">
         <div className="card-face card-back card-pattern flex h-full flex-col items-center justify-center gap-2 rounded-3xl border border-white/50 p-4 text-center text-white">
-          <span className="text-2xl">💗</span>
+          <span className="text-2xl" aria-hidden="true">
+            💗
+          </span>
           <p className="text-sm font-semibold uppercase tracking-wide">Tap to reveal</p>
         </div>
         <div className="card-face card-front flex h-full flex-col items-start justify-between rounded-3xl border border-white/60 bg-white/80 p-4 text-left text-slate-700 shadow-inner">
@@ -33,7 +35,9 @@ const GiftCard = ({ card, index, isRevealed, isFirstPicked, onReveal }: GiftCard
             <p className="text-xs font-semibold uppercase tracking-wide text-rose-400">{card.title}</p>
             <p className="mt-2 text-sm font-semibold text-slate-700">{card.message}</p>
           </div>
-          <span className="text-2xl">{card.emoji}</span>
+          <span className="text-2xl" aria-hidden="true">
+            {card.emoji}
+          </span>
         </div>
       </div>
     </button>

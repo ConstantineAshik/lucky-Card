@@ -34,13 +34,35 @@ const App = () => {
   );
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [sparkleKey, setSparkleKey] = useState(0);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   const shuffledCards = useMemo(() => seededShuffle(cards, seed), [seed]);
+  const totalCards = cards.length;
+  const revealedCount = revealedIds.size;
+  const allRevealed = revealedCount === totalCards;
+  const firstPickedTitle = firstPickedId
+    ? cards.find((card) => card.id === firstPickedId)?.title ?? null
+    : null;
 
   useEffect(() => {
     if (!initialSeedFromUrl) {
       setUrlState({ seed: initialSeed, picked: initialPickedIsValid ? initialPickedFromUrl : null });
     }
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updatePreference();
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", updatePreference);
+      return () => mediaQuery.removeEventListener("change", updatePreference);
+    }
+
+    mediaQuery.addListener(updatePreference);
+    return () => mediaQuery.removeListener(updatePreference);
   }, []);
 
   const handleReveal = (id: string) => {
@@ -82,59 +104,79 @@ const App = () => {
       url.searchParams.delete("picked");
     }
 
-    try {
-      await navigator.clipboard.writeText(url.toString());
-      setToastMessage("Copied!");
-    } catch {
-      setToastMessage("Unable to copy");
+    const shareLink = url.toString();
+
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareLink);
+        setToastMessage("Copied!");
+        return;
+      } catch {
+        setToastMessage("Unable to copy");
+        return;
+      }
     }
+
+    window.prompt("Copy this link:", shareLink);
+    setToastMessage("Link ready");
   };
 
   return (
     <div className="relative min-h-screen text-slate-800">
       <div className="ambient-orbs" aria-hidden="true" />
       <main className="relative mx-auto max-w-5xl px-4 py-10 sm:py-12">
-        <header className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-rose-400">Lucky Gift Card</p>
-          <h1 className="mt-2 font-display text-3xl text-slate-800 sm:text-4xl md:text-5xl">
-            Lucky Gift Card 💌
-          </h1>
-          <p className="mt-3 text-base text-slate-600 sm:text-lg">
-            Pick a mystery card and reveal your surprise.
-          </p>
-        </header>
+        <div className="rounded-3xl border border-white/60 bg-white/50 px-6 py-8 shadow-xl backdrop-blur-sm sm:px-8 sm:py-10">
+          <header className="text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-rose-400">Lucky Gift Card</p>
+            <h1 className="mt-2 font-display text-3xl text-slate-800 sm:text-4xl md:text-5xl">
+              Lucky Gift Card 💌
+            </h1>
+            <p className="mt-3 text-base text-slate-600 sm:text-lg">
+              Pick a mystery card and reveal your surprise.
+            </p>
+          </header>
 
-        <section className="mt-6 sm:mt-8">
-          <Controls
-            onShuffle={handleShuffle}
-            onRevealAll={handleRevealAll}
-            onCopyLink={handleCopyLink}
-            hasPicked={Boolean(firstPickedId)}
-          />
-        </section>
-
-        <section className="relative mt-8">
-          {sparkleKey > 0 && (
-            <div key={sparkleKey} className="sparkle-burst" aria-hidden="true">
-              {sparklePositions.map((sparkle, index) => (
-                <span
-                  key={index}
-                  className="sparkle"
-                  style={{
-                    "--tx": `${sparkle.x}px`,
-                    "--ty": `${sparkle.y}px`
-                  } as CSSProperties}
-                />
-              ))}
+          <section className="mt-6 sm:mt-8">
+            <Controls
+              onShuffle={handleShuffle}
+              onRevealAll={handleRevealAll}
+              onCopyLink={handleCopyLink}
+              allRevealed={allRevealed}
+            />
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <span className="rounded-full bg-white/70 px-3 py-1 shadow-sm">
+                Revealed {revealedCount}/{totalCards}
+              </span>
+              <span className="rounded-full bg-white/70 px-3 py-1 shadow-sm">Seed {seed}</span>
+              <span className="rounded-full bg-white/70 px-3 py-1 shadow-sm">
+                {firstPickedTitle ? `First pick: ${firstPickedTitle}` : "First pick: —"}
+              </span>
             </div>
-          )}
-          <CardGrid
-            cards={shuffledCards}
-            revealedIds={revealedIds}
-            firstPickedId={firstPickedId}
-            onReveal={handleReveal}
-          />
-        </section>
+          </section>
+
+          <section className="relative mt-8" aria-label="Gift cards">
+            {sparkleKey > 0 && !prefersReducedMotion && (
+              <div key={sparkleKey} className="sparkle-burst" aria-hidden="true">
+                {sparklePositions.map((sparkle, index) => (
+                  <span
+                    key={index}
+                    className="sparkle"
+                    style={{
+                      "--tx": `${sparkle.x}px`,
+                      "--ty": `${sparkle.y}px`
+                    } as CSSProperties}
+                  />
+                ))}
+              </div>
+            )}
+            <CardGrid
+              cards={shuffledCards}
+              revealedIds={revealedIds}
+              firstPickedId={firstPickedId}
+              onReveal={handleReveal}
+            />
+          </section>
+        </div>
       </main>
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
     </div>

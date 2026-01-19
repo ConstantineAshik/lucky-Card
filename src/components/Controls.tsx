@@ -2,10 +2,10 @@
   onShuffle: () => void;
   onRevealAll: () => void;
   onCopyLink: () => void;
-  hasPicked: boolean;
+  allRevealed: boolean;
 };
 
-const Controls = ({ onShuffle, onRevealAll, onCopyLink, hasPicked }: ControlsProps) => {
+const Controls = ({ onShuffle, onRevealAll, onCopyLink, allRevealed }: ControlsProps) => {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
       <button
@@ -17,8 +17,10 @@ const Controls = ({ onShuffle, onRevealAll, onCopyLink, hasPicked }: ControlsPro
       </button>
       <button
         type="button"
-        className="rounded-full border border-rose-200 bg-white/80 px-6 py-2 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 focus-visible:ring-offset-2"
+        className="rounded-full border border-rose-200 bg-white/80 px-6 py-2 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         onClick={onRevealAll}
+        disabled={allRevealed}
+        aria-disabled={allRevealed}
       >
         Reveal All
       </button>
@@ -27,7 +29,7 @@ const Controls = ({ onShuffle, onRevealAll, onCopyLink, hasPicked }: ControlsPro
         className="rounded-full border border-rose-200 bg-white/80 px-6 py-2 text-sm font-semibold text-rose-600 shadow-sm transition hover:border-rose-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300 focus-visible:ring-offset-2"
         onClick={onCopyLink}
       >
-        {hasPicked ? "Copy Share Link" : "Copy Seeded Link"}
+        Copy Share Link
       </button>
     </div>
   );

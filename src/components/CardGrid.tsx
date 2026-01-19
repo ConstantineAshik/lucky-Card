@@ -10,18 +10,19 @@ type CardGridProps = {
 
 const CardGrid = ({ cards, revealedIds, firstPickedId, onReveal }: CardGridProps) => {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+    <ul className="grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 lg:grid-cols-5" role="list">
       {cards.map((card, index) => (
-        <GiftCard
-          key={card.id}
-          card={card}
-          index={index}
-          isRevealed={revealedIds.has(card.id)}
-          isFirstPicked={firstPickedId === card.id}
-          onReveal={onReveal}
-        />
+        <li key={card.id}>
+          <GiftCard
+            card={card}
+            index={index}
+            isRevealed={revealedIds.has(card.id)}
+            isFirstPicked={firstPickedId === card.id}
+            onReveal={onReveal}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 };
 
